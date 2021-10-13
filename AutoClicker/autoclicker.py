@@ -24,13 +24,27 @@ from pynput.mouse import Button, Controller
 from pynput.keyboard import Listener, KeyCode
 from PyQt5.QtWidgets import QApplication, QComboBox, QHBoxLayout, QLabel, QLayout, QPushButton, QTextEdit, QWidget, QMainWindow, QGridLayout, QRadioButton, QLineEdit, QVBoxLayout, QFrame, QSpinBox
 
+logger = logging.getLogger("Main_Logger")
+logger.setLevel(logging.DEBUG)
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+# create formatter
+formatter = logging.Formatter(
+    '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+# add formatter to ch
+ch.setFormatter(formatter)
+# add ch to logger
+logger.addHandler(ch)
+
+logger.debug(
+    "Logging level is current DEBUG, which is only meant for development")
+
 
 class Window(QWidget):
     def __init__(self):
         super().__init__()
-
         self.AutoClickerStarted = False
-        self.icon = QIcon(".\Images\icon.png")
+        self.icon = QIcon("AutoClicker\Images\icon.png")
         self.setWindowIcon(self.icon)
         self.StartStopKey = "F6"
         self.Delay = 0
@@ -200,7 +214,6 @@ class Window(QWidget):
         # Add Options to Mouse Button Combo Box
         self.ClickOptionsMouseButtonComboBox.addItems(
             ["Left", "Middle", "Right"])
-
         # Add Mouse Button Combo Box to Mouse Button Click Options Layout
         self.ClickOptionsLayout.addWidget(
             self.ClickOptionsMouseButtonComboBox, 0, 1)
@@ -299,7 +312,8 @@ class Window(QWidget):
         self.MasterLayout.addWidget(self.StartStopAndHelpFrame, 3, 0, 1, 2)
 
         # Create Start button
-        self.StartStopAndHelpStartButton = QPushButton("Start (F6)")
+        self.StartStopAndHelpStartButton = QPushButton(
+            "Start (%s)" % self.StartStopKey)
 
         # Set Start Button to Disabled based off self.AutoClickerStarted var
         self.StartStopAndHelpStartButton.setEnabled(
@@ -358,7 +372,6 @@ class Window(QWidget):
             # Gets delay between each action
             self.startAutoClicker(self.calculateDelay())
         else:
-            print("Stopping CLicking")
             self.clickThread.stop_clicking()
 
     def calculateDelay(self):
@@ -373,15 +386,15 @@ class Window(QWidget):
         print("Sleeping for 10 secs")
         time.sleep(10)
         print("Starting clicker")
-        if self.ClickOptionsMouseButtonComboBox.currentText() == "left":
+        if self.ClickOptionsMouseButtonComboBox.currentText() == "Left":
             self.clickThread.set_button(Button.left)
-        elif self.ClickOptionsMouseButtonComboBox.currentText() == "right":
+        elif self.ClickOptionsMouseButtonComboBox.currentText() == "Right":
             self.clickThread.set_button(Button.right)
-        elif self.ClickOptionsMouseButtonComboBox.currentText() == "middle":
+        elif self.ClickOptionsMouseButtonComboBox.currentText() == "Middle":
             self.clickThread.set_button(Button.middle)
         self.clickThread.set_delay(delay)
         if(self.RepeatRadioButton.isChecked()):
-            print("finite repeat")
+            logger.info("Repeat finite times checked")
             self.clickThread.set_repeatCount(int(self.RepeatSpinBox.text()))
         elif(self.ClickRepeatIndefinitelyRadioButton.isChecked()):
             self.clickThread.set_repeatCount(-1)
@@ -415,37 +428,43 @@ class ClickMouse(threading.Thread):
         self.count = 0
         self.running = False
         self.program_running = True
+        logger.debug("ClickMouse Class Init (%s %s %s %s %s %s)" % self.delay,
+                     self.button, self.repeatCount, self.count, self.running, self.program_running)
 
     def set_delay(self, newdelay):
+        logger.debug("Delay was set to %s" % newdelay)
         self.delay = newdelay
 
     def set_button(self, newbutton):
+        logger.debug("Button was set to %s" % newbutton)
         self.button = newbutton
 
     def set_repeatCount(self, newCount):
+        logger.debug("RepeatCount set to %d", newCount)
         self.repeatCount = newCount
 
     def start_clicking(self):
-        print(self.repeatCount)
+        logger.debug("Clicking Initated")
         self.count = 0
         self.running = True
 
     def stop_clicking(self):
+        logger.debug("Clicking Stopped")
         self.running = False
 
     def exit(self):
-        print("Exiting autoclicker")
+        logger.debug("ClickMouse Class Uninitialized")
         self.stop_clicking()
         self.program_running = False
 
     def run(self):
         while self.program_running:
             while self.running:
-                print("Clicking")
                 mouse.click(self.button)
+                logger.debug("Mouse Clicked")
                 self.count += 1
                 if(self.count == self.repeatCount):
-                    print("Stopping clicking")
+                    logger.debug("repeat count met")
                     mainWindow.StartStopAutoClicker()
                     break
                 time.sleep(self.delay)
