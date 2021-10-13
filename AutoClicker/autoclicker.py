@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 
 # Copyright 2021 Michael Canady
 
@@ -18,6 +17,7 @@
 import time
 import threading
 import sys
+import logging
 from PyQt5.QtGui import QIcon
 
 from pynput.mouse import Button, Controller
@@ -30,7 +30,7 @@ class Window(QWidget):
         super().__init__()
 
         self.AutoClickerStarted = False
-        self.icon = QIcon(".\Images\icon.jpg")
+        self.icon = QIcon(".\Images\icon.png")
         self.setWindowIcon(self.icon)
         self.StartStopKey = "F6"
         self.Delay = 0
@@ -52,7 +52,6 @@ class Window(QWidget):
 
     @staticmethod
     def _on_destroyed(self):
-        print("destroyed")
         self.clickThread.exit()
         pass
 
