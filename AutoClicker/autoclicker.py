@@ -1,4 +1,5 @@
 
+
 # Copyright 2021 Michael Canady
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
@@ -17,77 +18,88 @@
 import time
 import threading
 import sys
-import logging
 from PyQt5.QtGui import QIcon
 
-from pynput.mouse import Button, Controller
+from pynput.mouse import Button, Controller, Listener as mouseListener
 from pynput.keyboard import Listener, KeyCode
 from PyQt5.QtWidgets import QApplication, QComboBox, QHBoxLayout, QLabel, QLayout, QPushButton, QTextEdit, QWidget, QMainWindow, QGridLayout, QRadioButton, QLineEdit, QVBoxLayout, QFrame, QSpinBox
-
-logger = logging.getLogger("Main_Logger")
-logger.setLevel(logging.DEBUG)
-ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
-# create formatter
-formatter = logging.Formatter(
-    '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-# add formatter to ch
-ch.setFormatter(formatter)
-# add ch to logger
-logger.addHandler(ch)
-
-logger.debug(
-    "Logging level is current DEBUG, which is only meant for development")
 
 
 class Window(QWidget):
     def __init__(self):
         super().__init__()
+
         self.AutoClickerStarted = False
-        self.icon = QIcon("AutoClicker\Images\icon.png")
-        self.setWindowIcon(self.icon)
         self.StartStopKey = "F6"
         self.Delay = 0
-        self.clickThread = ClickMouse(self.Delay, Button.left, 3)
-        self.clickThread.start()
         self.IsFinite = True
-
         self.SelectedX = 0
         self.SelectedY = 0
-
-        self.destroyed.connect(Window._on_destroyed)
 
         self.title = 'AutoClicker'
         self.left = 300
         self.right = 300
         self.width = 600
         self.height = 400
+        self.setWindowIcon(QIcon(".\Images\icon.png"))
+
+        self.clickThread = ClickMouse(self.Delay, Button.left, 3)
+        self.clickThread.start()
+
         self.initUI()
 
     @staticmethod
     def _on_destroyed(self):
+        print("destroyed")
         self.clickThread.exit()
+        self.listener.stop()
         pass
 
     def initUI(self):
+        self.destroyed.connect(Window._on_destroyed)
         self.setGeometry(self.left, self.right, self.width, self.height)
         self.setWindowTitle(self.title)
 
         # Main Layout
         self.MasterLayout = QGridLayout()
 
-        # Create QFrame for cusor location
-
-        self.initCurserLocation()
-
+        # Set Main Layout as the Layout
         self.setLayout(self.MasterLayout)
+
+        # Create QFrame for cusor location
+        self.initCurserLocation()
 
         self.show()
 
     def initCurserLocation(self):
-        # Create QFrame for Click Interval
-        self.ClickInterval = QFrame()
-        self.ClickInterval.setWindowTitle("Click Interval")
+        self.ClickInterval = QFrame()  # Create QFrame for Click Interval
+        self.ClickIntervalLayout = QHBoxLayout()  # Create Click Interval Layout
+        self.ClickIntervalHours = QSpinBox()  # Create Hours input
+        self.ClickIntervalHoursLabel = QLabel("hours")  # Create Hours Label
+        self.ClickIntervalMinutes = QSpinBox()  # Create Minutes input
+        self.ClickIntervalMinutesLabel = QLabel(
+            "Minutes")  # Create Minutes Label
+        self.ClickIntervalSeconds = QSpinBox()  # Create Seconds input
+        self.ClickIntervalSecondsLabel = QLabel(
+            "Seconds")  # Create Seconds Label
+        self.ClickIntervalMilliseconds = QSpinBox()  # Create Milliseconds input
+        self.ClickIntervalMillisecondsLabel = QLabel(
+            "Milliseconds")  # Create Milliseconds Label
+        self.ClickRepeat = QFrame()  # Create QFrame for Click Repeat
+        self.ClickRepeatLayout = QGridLayout()  # Create Click Repeat Layout
+        self.RepeatRadioButton = QRadioButton(
+            "Repeat")  # Create Repeat Radio Button
+        self.RepeatSpinBox = QSpinBox()  # Create Repeat Time
+        self.ClickRepeatIndefinitelyRadioButton = QRadioButton(
+            "Repeat until stopped")  # Create Repeat Indefinitely Radio Button
+        self.ClickOptions = QFrame()  # Create QFrame for Click Options
+        self.ClickOptionsMouseButtonComboBox = QComboBox()  # Create Mouse Button Combo Box
+        self.ClickOptionsClickTypeLabel = QLabel(
+            "Click Type:")  # Create Click Type Label
+        self.ClickOptionsClickTypeComboBox = QComboBox()  # Create Click Type Combo Box
+        self.CursorLocationFrame = QFrame()  # Create QFrame for cursor location
+
+        # Set ClickInterval Information
         self.ClickInterval.resize(500, 40)
         self.ClickInterval.setFrameStyle(QFrame.Panel | QFrame.Raised)
         self.ClickInterval.setLineWidth(1)
@@ -95,59 +107,30 @@ class Window(QWidget):
         # Add Click Interval to master layout
         self.MasterLayout.addWidget(self.ClickInterval, 0, 0, 1, 2)
 
-        # Create Click Interval Layout
-        self.ClickIntervalLayout = QHBoxLayout()
-
         # Make Click Interval Layout, the layour for Click Interval
         self.ClickInterval.setLayout(self.ClickIntervalLayout)
-
-        # Create Hours input
-        self.ClickIntervalHours = QSpinBox()
-
-        # Create Hours Label
-        self.ClickIntervalHoursLabel = QLabel("hours")
 
         # Add Hours input to Click Interval Layout
         self.ClickIntervalLayout.addWidget(self.ClickIntervalHours)
         # Add Hours Label to Click Interval Layout
         self.ClickIntervalLayout.addWidget(self.ClickIntervalHoursLabel)
 
-        # Create Minutes input
-        self.ClickIntervalMinutes = QSpinBox()
-
-        # Create Minutes Label
-        self.ClickIntervalMinutesLabel = QLabel("Minutes")
-
         # Add Minutes input to Click Interval Layout
         self.ClickIntervalLayout.addWidget(self.ClickIntervalMinutes)
         # Add Minutes Label to Click Interval Layout
         self.ClickIntervalLayout.addWidget(self.ClickIntervalMinutesLabel)
-
-        # Create Seconds input
-        self.ClickIntervalSeconds = QSpinBox()
-
-        # Create Seconds Label
-        self.ClickIntervalSecondsLabel = QLabel("Seconds")
 
         # Add Seconds input to Click Interval Layout
         self.ClickIntervalLayout.addWidget(self.ClickIntervalSeconds)
         # Add Seconds Label to Click Interval Layout
         self.ClickIntervalLayout.addWidget(self.ClickIntervalSecondsLabel)
 
-        # Create Milliseconds input
-        self.ClickIntervalMilliseconds = QSpinBox()
-
-        # Create Milliseconds Label
-        self.ClickIntervalMillisecondsLabel = QLabel("Milliseconds")
-
         # Add Milliseconds input to Click Interval Layout
         self.ClickIntervalLayout.addWidget(self.ClickIntervalMilliseconds)
         # Add Milliseconds Label to Click Interval Layout
         self.ClickIntervalLayout.addWidget(self.ClickIntervalMillisecondsLabel)
 
-        # Create QFrame for Click Repeat
-        self.ClickRepeat = QFrame()
-        self.ClickRepeat.setWindowTitle("Click Interval")
+        # ClickRepeat Info
         self.ClickRepeat.resize(500, 40)
         self.ClickRepeat.setFrameStyle(QFrame.Panel | QFrame.Raised)
         self.ClickRepeat.setLineWidth(1)
@@ -155,32 +138,21 @@ class Window(QWidget):
         # Add Click Repeat to master layout
         self.MasterLayout.addWidget(self.ClickRepeat, 1, 1)
 
-        # Create Click Repeat Layout
-        self.ClickRepeatLayout = QGridLayout()
-
         # Make Click Interval Layout, the layour for Click Interval
         self.ClickRepeat.setLayout(self.ClickRepeatLayout)
 
-        # Create Repeat Radio Button
-        self.RepeatRadioButton = QRadioButton("Repeat")
+        # RepeatRadioButton Info
         self.RepeatRadioButton.setChecked(self.IsFinite)
 
         # Add onclick function to Click Repeat Indefinitely
         # self.RepeatRadioButton.toggled.connect(
         #    self.toggleRepeatCount)
 
-        # Create Repeat Time
-        self.RepeatSpinBox = QSpinBox()
-
         # Add Repeat Radio Button to Click Repeat Layout
         self.ClickRepeatLayout.addWidget(self.RepeatRadioButton, 0, 0)
 
         # Add Repeat Spin Box to Click Repeat Layout
         self.ClickRepeatLayout.addWidget(self.RepeatSpinBox, 0, 1)
-
-        # Create Repeat Indefinitely Radio Button
-        self.ClickRepeatIndefinitelyRadioButton = QRadioButton(
-            "Repeat until stopped")
 
         # Add onclick function to Click Repeat Indefinitely
         self.ClickRepeatIndefinitelyRadioButton.toggled.connect(
@@ -190,9 +162,7 @@ class Window(QWidget):
         self.ClickRepeatLayout.addWidget(
             self.ClickRepeatIndefinitelyRadioButton, 1, 0, 1, 1)
 
-        # Create QFrame for Click Options
-        self.ClickOptions = QFrame()
-        self.ClickOptions.setWindowTitle("Click Interval")
+        # ClickOptions Info
         self.ClickOptions.resize(500, 40)
         self.ClickOptions.setFrameStyle(QFrame.Panel | QFrame.Raised)
         self.ClickOptions.setLineWidth(1)
@@ -209,11 +179,10 @@ class Window(QWidget):
         # Create Mouse Button Label
         self.ClickOptionsMouseButtonLabel = QLabel("Mouse Button:")
 
-        # Create Mouse Button Combo Box
-        self.ClickOptionsMouseButtonComboBox = QComboBox()
         # Add Options to Mouse Button Combo Box
         self.ClickOptionsMouseButtonComboBox.addItems(
             ["Left", "Middle", "Right"])
+
         # Add Mouse Button Combo Box to Mouse Button Click Options Layout
         self.ClickOptionsLayout.addWidget(
             self.ClickOptionsMouseButtonComboBox, 0, 1)
@@ -222,11 +191,6 @@ class Window(QWidget):
         self.ClickOptionsLayout.addWidget(
             self.ClickOptionsMouseButtonLabel, 0, 0)
 
-        # Create Click Type Label
-        self.ClickOptionsClickTypeLabel = QLabel("Click Type:")
-
-        # Create Click Type Combo Box
-        self.ClickOptionsClickTypeComboBox = QComboBox()
         # Add Options to Click Type Combo Box
         self.ClickOptionsClickTypeComboBox.addItems(
             ["Single", "Double"])
@@ -239,8 +203,7 @@ class Window(QWidget):
         self.ClickOptionsLayout.addWidget(
             self.ClickOptionsClickTypeLabel, 1, 0)
 
-        # Create QFrame for cursor location
-        self.CursorLocationFrame = QFrame()
+        # Cursor Location Frame
         self.CursorLocationFrame.resize(500, 40)
         self.CursorLocationFrame.setFrameStyle(QFrame.Panel | QFrame.Raised)
         self.CursorLocationFrame.setLineWidth(1)
@@ -255,6 +218,9 @@ class Window(QWidget):
         self.CursorLocationCurrentLocationRadioButton = QRadioButton(
             "Current Location")
 
+        self.CursorLocationCurrentLocationRadioButton.clicked.connect(
+            self.ToggleSpecifcLocation)
+
         self.CursorLocationCurrentLocationRadioButton.setChecked(True)
 
         # Add Current Location Radio Button to Cursor Location Layout
@@ -264,6 +230,9 @@ class Window(QWidget):
         # Create Specific location radio button
         self.CursorLocationSpecificLocationRadioButton = QRadioButton(
             "Specific Location")
+
+        self.CursorLocationSpecificLocationRadioButton.clicked.connect(
+            self.ToggleSpecifcLocation)
 
         # Add Current Location Radio Button to Cursor Location Layout
         self.CursorLocationLayout.addWidget(
@@ -275,10 +244,13 @@ class Window(QWidget):
 
         # Add onClick function
         self.CursorLocationSpecificLocationSelectButton.clicked.connect(
-            lambda: self.getClickLocation())
+            self.getLocation)
+
+        self.CursorLocationSpecificLocationSelectButton.setEnabled(False)
 
         # Create X cordinate spot
         self.CursorLocationSpecificLocationXCordinateEntry = QLineEdit()
+        self.CursorLocationSpecificLocationXCordinateEntry.setEnabled(False)
 
         # Add X cordinate spot to CUrsor Location Layout
         self.CursorLocationLayout.addWidget(
@@ -286,6 +258,7 @@ class Window(QWidget):
 
         # Create Y cordinate spot
         self.CursorLocationSpecificLocationYCordinateEntry = QLineEdit()
+        self.CursorLocationSpecificLocationYCordinateEntry.setEnabled(False)
 
         # Add Y cordinate spot to CUrsor Location Layout
         self.CursorLocationLayout.addWidget(
@@ -312,8 +285,7 @@ class Window(QWidget):
         self.MasterLayout.addWidget(self.StartStopAndHelpFrame, 3, 0, 1, 2)
 
         # Create Start button
-        self.StartStopAndHelpStartButton = QPushButton(
-            "Start (%s)" % self.StartStopKey)
+        self.StartStopAndHelpStartButton = QPushButton("Start (F6)")
 
         # Set Start Button to Disabled based off self.AutoClickerStarted var
         self.StartStopAndHelpStartButton.setEnabled(
@@ -372,6 +344,7 @@ class Window(QWidget):
             # Gets delay between each action
             self.startAutoClicker(self.calculateDelay())
         else:
+            print("Stopping CLicking")
             self.clickThread.stop_clicking()
 
     def calculateDelay(self):
@@ -386,18 +359,24 @@ class Window(QWidget):
         print("Sleeping for 10 secs")
         time.sleep(10)
         print("Starting clicker")
-        if self.ClickOptionsMouseButtonComboBox.currentText() == "Left":
+        if self.ClickOptionsMouseButtonComboBox.currentText() == "left":
             self.clickThread.set_button(Button.left)
-        elif self.ClickOptionsMouseButtonComboBox.currentText() == "Right":
+        elif self.ClickOptionsMouseButtonComboBox.currentText() == "right":
             self.clickThread.set_button(Button.right)
-        elif self.ClickOptionsMouseButtonComboBox.currentText() == "Middle":
+        elif self.ClickOptionsMouseButtonComboBox.currentText() == "middle":
             self.clickThread.set_button(Button.middle)
         self.clickThread.set_delay(delay)
         if(self.RepeatRadioButton.isChecked()):
-            logger.info("Repeat finite times checked")
+            print("finite repeat")
             self.clickThread.set_repeatCount(int(self.RepeatSpinBox.text()))
         elif(self.ClickRepeatIndefinitelyRadioButton.isChecked()):
             self.clickThread.set_repeatCount(-1)
+        if(self.CursorLocationSpecificLocationRadioButton.isChecked()):
+            self.clickThread.set_cords(self.CursorLocationSpecificLocationXCordinateEntry.text(
+            ), self.CursorLocationSpecificLocationYCordinateEntry.text())
+            self.clickThread.use_current_location(False)
+        elif(self.CursorLocationCurrentLocationRadioButton.isChecked()):
+            self.clickThread.use_current_location(True)
         self.clickThread.start_clicking()
 
     def toSeconds(self, value, timeType):
@@ -411,12 +390,28 @@ class Window(QWidget):
         elif timeType == "millisecond":
             return int(value)/1000
 
-    def initListener(self):
-        with Listener(on_press=self.on_press) as listener:
-            listener.join()
+    def on_click(self, x, y, button, pressed):
+        if pressed and button == Button.left:
+            self.listener.stop()
+            self.CursorLocationSpecificLocationXCordinateEntry.setText(str(x))
+            self.CursorLocationSpecificLocationYCordinateEntry.setText(str(y))
 
-    def on_press(self, key):
-        print(key)
+    def on_move(self, x, y):
+        self.CursorLocationSpecificLocationXCordinateEntry.setText(str(x))
+        self.CursorLocationSpecificLocationYCordinateEntry.setText(str(y))
+
+    def getLocation(self):
+        self.listener = mouseListener(
+            on_move=self.on_move, on_click=self.on_click, on_scroll=None)
+        self.listener.start()
+
+    def ToggleSpecifcLocation(self):
+        self.CursorLocationSpecificLocationXCordinateEntry.setEnabled(
+            not self.CursorLocationSpecificLocationXCordinateEntry.isEnabled())
+        self.CursorLocationSpecificLocationYCordinateEntry.setEnabled(
+            not self.CursorLocationSpecificLocationYCordinateEntry.isEnabled())
+        self.CursorLocationSpecificLocationSelectButton.setEnabled(
+            not self.CursorLocationSpecificLocationSelectButton.isEnabled())
 
 
 class ClickMouse(threading.Thread):
@@ -425,65 +420,56 @@ class ClickMouse(threading.Thread):
         self.delay = delay
         self.button = button
         self.repeatCount = repeatCount
+        self.X = 0
+        self.Y = 0
         self.count = 0
+        self.UseCurrentLocation = True
         self.running = False
         self.program_running = True
-        logger.debug("ClickMouse Class Init (%s %s %s %s %s %s)" % self.delay,
-                     self.button, self.repeatCount, self.count, self.running, self.program_running)
+
+    def use_current_location(self, bool):
+        self.UseCurrentLocation = bool
+
+    def set_cords(self, x, y):
+        self.X = int(x)
+        self.Y = int(y)
 
     def set_delay(self, newdelay):
-        logger.debug("Delay was set to %s" % newdelay)
         self.delay = newdelay
 
     def set_button(self, newbutton):
-        logger.debug("Button was set to %s" % newbutton)
         self.button = newbutton
 
     def set_repeatCount(self, newCount):
-        logger.debug("RepeatCount set to %d", newCount)
         self.repeatCount = newCount
 
     def start_clicking(self):
-        logger.debug("Clicking Initated")
+        print(self.repeatCount)
         self.count = 0
         self.running = True
 
     def stop_clicking(self):
-        logger.debug("Clicking Stopped")
         self.running = False
 
     def exit(self):
-        logger.debug("ClickMouse Class Uninitialized")
+        print("Exiting autoclicker")
         self.stop_clicking()
         self.program_running = False
 
     def run(self):
         while self.program_running:
             while self.running:
+                print("Clicking")
+                if(not self.UseCurrentLocation):
+                    mouse.position = (self.X, self.Y)
                 mouse.click(self.button)
-                logger.debug("Mouse Clicked")
                 self.count += 1
                 if(self.count == self.repeatCount):
-                    logger.debug("repeat count met")
+                    print("Stopping clicking")
                     mainWindow.StartStopAutoClicker()
                     break
                 time.sleep(self.delay)
             time.sleep(0.1)
-
-
-class ClickLocation(threading.Thread):
-
-    def on_click(self, x, y, button, pressed):
-        if pressed:
-            print("clicked")
-            self.CursorLocationSpecificLocationXCordinateEntry.setText(x)
-            self.CursorLocationSpecificLocationYCordinateEntry.setText(y)
-            self.listener.stop()
-
-    def getClickLocation(self):
-        with Listener(on_click=self.on_click) as self.listener:
-            print("listening")
-            self.listener.join()
 
 
 if __name__ == '__main__':
