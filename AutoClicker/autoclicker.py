@@ -50,6 +50,8 @@ class Window(QWidget):
         self.SelectedX = 0
         self.SelectedY = 0
 
+        self.clickThread = None
+
         self.title = "Clicky Boi"
         self.left = 300
         self.right = 300
@@ -62,7 +64,8 @@ class Window(QWidget):
     @staticmethod
     def _on_destroyed(self):
         print("destroyed")
-        self.clickThread.exit()
+        if self.clickThread is not None:
+            self.clickThread.exit()
         self.listener.stop()
         pass
 
@@ -481,4 +484,5 @@ if __name__ == "__main__":
     try:
         sys.exit(app.exec_())
     except (KeyboardInterrupt, SystemExit):
-        mainWindow.clickThread.exit()
+        if mainWindow.clickThread is not None:
+            mainWindow.clickThread.exit()
