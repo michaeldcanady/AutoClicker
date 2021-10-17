@@ -2,3 +2,4 @@
 /AutoClicker/build/*
 /AutoClicker/dist/*
 /AutoClicker/autoclicker.spec
+/pyinstaller.txt
