@@ -1,4 +1,4 @@
-# AutoClicker
+# Clicky Boi
 
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/michaeldcanady/autoclicker/python-app?style=plastic)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/michaeldcanady/autoclicker?style=plastic)
@@ -7,6 +7,6 @@
 
 # Screenshot
 
-![Screenshot of autoclicker](./Images/screenshot.png)
+![Screenshot of autoclicker](./Images/usage.gif)
 
 # Description

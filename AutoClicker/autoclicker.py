@@ -36,12 +36,12 @@ class Window(QWidget):
         self.SelectedX = 0
         self.SelectedY = 0
 
-        self.title = 'AutoClicker'
+        self.title = 'Clicky Boi'
         self.left = 300
         self.right = 300
         self.width = 600
         self.height = 400
-        self.setWindowIcon(QIcon(".\Images\icon.png"))
+        self.setWindowIcon(QIcon(".\AutoClicker\Images\icon.png"))
 
         self.clickThread = ClickMouse(self.Delay, Button.left, 3)
         self.clickThread.start()
@@ -285,7 +285,8 @@ class Window(QWidget):
         self.MasterLayout.addWidget(self.StartStopAndHelpFrame, 3, 0, 1, 2)
 
         # Create Start button
-        self.StartStopAndHelpStartButton = QPushButton("Start (F6)")
+        self.StartStopAndHelpStartButton = QPushButton(
+            "Start (%s)" % self.StartStopKey)
 
         # Set Start Button to Disabled based off self.AutoClickerStarted var
         self.StartStopAndHelpStartButton.setEnabled(
@@ -300,7 +301,8 @@ class Window(QWidget):
             self.StartStopAndHelpStartButton, 0, 0)
 
         # Create Stop button
-        self.StartStopAndHelpStopButton = QPushButton("Stop (F6)")
+        self.StartStopAndHelpStopButton = QPushButton(
+            "Stop (%s)" % self.StartStopKey)
 
         # Set Stop Button to Disabled when Start button is
         self.StartStopAndHelpStopButton.setEnabled(
