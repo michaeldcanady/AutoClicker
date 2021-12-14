@@ -61,6 +61,12 @@ class Window(QWidget):
         self.height = 400
         self.setWindowIcon(QIcon(".\AutoClicker\Images\icon.png"))
 
+        self.buttondict = {
+            "Left": Button.left,
+            "Right": Button.right,
+            "Middle": Button.middle,
+        }
+
         self.initUI()
 
     @staticmethod
@@ -202,8 +208,7 @@ class Window(QWidget):
         self.ClickOptionsMouseButtonLabel = QLabel("Mouse Button:")
 
         # Add Options to Mouse Button Combo Box
-        self.ClickOptionsMouseButtonComboBox.addItems(
-            ["Left", "Middle", "Right"])
+        self.ClickOptionsMouseButtonComboBox.addItems(self.buttondict.keys())
 
         # Add Mouse Button Combo Box to Mouse Button Click Options Layout
         self.ClickOptionsLayout.addWidget(
@@ -362,11 +367,7 @@ class Window(QWidget):
         )
 
     def toggleRepeatCount(self):
-        if self.IsFinite:
-            self.RepeatSpinBox.setDisabled(True)
-        else:
-            print("enabled")
-            self.RepeatSpinBox.setDisabled(False)
+        self.RepeatSpinBox.setDisabled(self.IsFinite)
         self.IsFinite = not self.IsFinite
 
     def UseCurrentLocationChecked(self):
@@ -381,10 +382,9 @@ class Window(QWidget):
 
         if self.AutoClickerStarted:
             # Gets delay between each action
-            print("Here")
             self.startAutoClicker(self.calculateDelay())
         else:
-            print("Stopping CLicking")
+            print("Stopping Clicking")
             self.clickThread.exit()
 
     def calculateDelay(self):
@@ -395,16 +395,10 @@ class Window(QWidget):
         return self.Delay
 
     def startAutoClicker(self, delay):
-        buttondict = {
-            "Left": Button.left,
-            "Right": Button.right,
-            "Middle": Button.middle,
-        }
-        print("Now here")
-        print(int(self.CursorLocationSpecificLocationXCordinateEntry.text()))
         self.clickThread = ClickMouse(
             delay=self.Delay,
-            button=buttondict[self.ClickOptionsMouseButtonComboBox.currentText()],
+            button=self.buttondict[self.ClickOptionsMouseButtonComboBox.currentText(
+            )],
             useCurrentLocation=self.CursorLocationCurrentLocationRadioButton.isChecked(),
             X=int(self.CursorLocationSpecificLocationXCordinateEntry.text()),
             Y=int(self.CursorLocationSpecificLocationYCordinateEntry.text()),
@@ -416,7 +410,6 @@ class Window(QWidget):
 
     def toSeconds(self, ts):
         timeComponents = ts.split(":")
-        print("Not Here")
         return timedelta(hours=int(timeComponents[0]), minutes=int(timeComponents[1]), seconds=int(timeComponents[2]), milliseconds=int(timeComponents[3])).total_seconds()
 
     def update_cordinates(self, x, y):
