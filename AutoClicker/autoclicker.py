@@ -38,6 +38,7 @@ import sys
 import PyQt5
 from PyQt5.QtGui import QIcon, QIntValidator
 from PyQt5 import QtWidgets
+from datetime import timedelta
 
 
 class Window(QWidget):
@@ -277,6 +278,8 @@ class Window(QWidget):
         # Create X cordinate spot
         self.CursorLocationSpecificLocationXCordinateEntry = QLineEdit()
         self.CursorLocationSpecificLocationXCordinateEntry.setEnabled(False)
+        self.CursorLocationSpecificLocationXCordinateEntry.setText(
+            "0")
         self.CursorLocationSpecificLocationXCordinateEntry.setValidator(
             QIntValidator(0, 9999, self))
 
@@ -288,6 +291,8 @@ class Window(QWidget):
         # Create Y cordinate spot
         self.CursorLocationSpecificLocationYCordinateEntry = QLineEdit()
         self.CursorLocationSpecificLocationYCordinateEntry.setEnabled(False)
+        self.CursorLocationSpecificLocationYCordinateEntry.setText(
+            "0")
         self.CursorLocationSpecificLocationYCordinateEntry.setValidator(
             QIntValidator(0, 9999, self))
 
@@ -376,20 +381,17 @@ class Window(QWidget):
 
         if self.AutoClickerStarted:
             # Gets delay between each action
-
+            print("Here")
             self.startAutoClicker(self.calculateDelay())
         else:
             print("Stopping CLicking")
             self.clickThread.exit()
 
     def calculateDelay(self):
-        self.Delay = (
-            self.toSeconds(self.ClickIntervalHours.text(), "hour")
-            + self.toSeconds(self.ClickIntervalMinutes.text(), "minute")
-            + self.toSeconds(self.ClickIntervalSeconds.text(), "second")
-            + self.toSeconds(self.ClickIntervalMilliseconds.text(),
-                             "millisecond")
-        )
+        string = "{0:0>2}:{1:0>2}:{2:0>2}:{3:0>2}".format(
+            self.ClickIntervalHours.text(), self.ClickIntervalMinutes.text(), self.ClickIntervalSeconds.text(), self.ClickIntervalMilliseconds.text())
+
+        self.Delay = self.toSeconds(string)
         return self.Delay
 
     def startAutoClicker(self, delay):
@@ -398,28 +400,24 @@ class Window(QWidget):
             "Right": Button.right,
             "Middle": Button.middle,
         }
+        print("Now here")
+        print(int(self.CursorLocationSpecificLocationXCordinateEntry.text()))
         self.clickThread = ClickMouse(
-            delay=int(self.RepeatSpinBox.text()),
+            delay=self.Delay,
             button=buttondict[self.ClickOptionsMouseButtonComboBox.currentText()],
             useCurrentLocation=self.CursorLocationCurrentLocationRadioButton.isChecked(),
             X=int(self.CursorLocationSpecificLocationXCordinateEntry.text()),
             Y=int(self.CursorLocationSpecificLocationYCordinateEntry.text()),
             finiteRepeat=self.RepeatRadioButton.isChecked(),
-            repeatCount=int(self.RepeatSpinBox.text()),
+            repeatCount=int(self.RepeatSpinBox.text())
         )
         print("start")
         self.clickThread.start()
 
-    def toSeconds(self, value, timeType):
-
-        if timeType == "hour":
-            return int(value) * 60 * 60
-        elif timeType == "minute":
-            return int(value) * 60
-        elif timeType == "second":
-            return int(value)
-        elif timeType == "millisecond":
-            return int(value) / 1000
+    def toSeconds(self, ts):
+        timeComponents = ts.split(":")
+        print("Not Here")
+        return timedelta(hours=int(timeComponents[0]), minutes=int(timeComponents[1]), seconds=int(timeComponents[2]), milliseconds=int(timeComponents[3])).total_seconds()
 
     def update_cordinates(self, x, y):
         self.CursorLocationSpecificLocationXCordinateEntry.setText(str(x))
@@ -462,7 +460,8 @@ class ClickMouse(threading.Thread):
         self, delay, button, useCurrentLocation, X, Y, finiteRepeat, repeatCount
     ):
         super(ClickMouse, self).__init__()
-        self.delay = delay
+        print("In click mouse object")
+        self.Delay = delay
         self.button = button
         self.X = X
         self.Y = Y
@@ -506,7 +505,7 @@ class ClickMouse(threading.Thread):
                     break
                 else:
                     self.count += 1
-                time.sleep(self.delay)
+                time.sleep(self.Delay)
             time.sleep(0.1)
 
 
@@ -519,3 +518,5 @@ if __name__ == "__main__":
     except (KeyboardInterrupt, SystemExit):
         if mainWindow.clickThread is not None:
             mainWindow.clickThread.exit()
+    except Exception as e:
+        print(e)
