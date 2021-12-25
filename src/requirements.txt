@@ -14,3 +14,14 @@ pyqt5-sip==12.9.0
     # via pyqt5
 six==1.16.0
     # via pynput
+altgraph==0.17
+colored==1.4.2
+future==0.18.2
+Gooey==1.0.3.1
+numpy==1.18.4
+pefile==2019.4.18
+Pillow==7.1.2
+psutil==5.7.0
+pyinstaller==4.7
+pywin32-ctypes==0.2.0
+wxPython==4.0.7
