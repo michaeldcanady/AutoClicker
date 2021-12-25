@@ -76,6 +76,65 @@ def get_logger(logger_name):
     return logger
 
 
+class delay_interval(QFrame):
+    def __init__(self):
+        super().__init__()
+        self.clickInterval_log = get_logger("Click Interval")
+
+        self.init_Frame()
+
+    def init_Frame(self):
+        try:
+            self.ClickIntervalLayout = QHBoxLayout()  # Create Click Interval Layout
+            self.ClickIntervalHours = QSpinBox()  # Create Hours input
+            self.ClickIntervalHoursLabel = QLabel(
+                "hours")  # Create Hours Label
+            self.ClickIntervalMinutes = QSpinBox()  # Create Minutes input
+            self.ClickIntervalMinutesLabel = QLabel(
+                "Minutes")  # Create Minutes Label
+            self.ClickIntervalSeconds = QSpinBox()  # Create Seconds input
+            self.ClickIntervalSecondsLabel = QLabel(
+                "Seconds")  # Create Seconds Label
+            self.ClickIntervalMilliseconds = QSpinBox()  # Create Milliseconds input
+            self.ClickIntervalMillisecondsLabel = QLabel(
+                "Milliseconds")  # Create Milliseconds Label
+
+            # Set ClickInterval Information
+            self.resize(500, 40)
+            self.setFrameStyle(QFrame.Panel | QFrame.Raised)
+            self.setLineWidth(1)
+
+            # Make Click Interval Layout, the layour for Click Interval
+            self.setLayout(self.ClickIntervalLayout)
+
+            # Add Hours input to Click Interval Layout
+            self.ClickIntervalLayout.addWidget(self.ClickIntervalHours)
+            # Add Hours Label to Click Interval Layout
+            self.ClickIntervalLayout.addWidget(self.ClickIntervalHoursLabel)
+
+            # Add Minutes input to Click Interval Layout
+            self.ClickIntervalLayout.addWidget(self.ClickIntervalMinutes)
+            # Add Minutes Label to Click Interval Layout
+            self.ClickIntervalLayout.addWidget(self.ClickIntervalMinutesLabel)
+
+            # Add Seconds input to Click Interval Layout
+            self.ClickIntervalLayout.addWidget(self.ClickIntervalSeconds)
+            # Add Seconds Label to Click Interval Layout
+            self.ClickIntervalLayout.addWidget(self.ClickIntervalSecondsLabel)
+
+            # Add Milliseconds input to Click Interval Layout
+            self.ClickIntervalLayout.addWidget(self.ClickIntervalMilliseconds)
+            # Add Milliseconds Label to Click Interval Layout
+            self.ClickIntervalLayout.addWidget(
+                self.ClickIntervalMillisecondsLabel)
+        except:
+            self.clickInterval_log.error(
+                "failed to build delay interval section")
+        else:
+            self.clickInterval_log.info(
+                "successfully built delay interval section")
+
+
 class Window(QWidget):
     def __init__(self):
         super().__init__()
@@ -154,57 +213,10 @@ class Window(QWidget):
             self.show()
 
     def init_delay_interval_section(self):
-        try:
-            self.ClickIntervalLayout = QHBoxLayout()  # Create Click Interval Layout
-            self.ClickInterval = QFrame()  # Create QFrame for Click Interval
-            self.ClickIntervalHours = QSpinBox()  # Create Hours input
-            self.ClickIntervalHoursLabel = QLabel(
-                "hours")  # Create Hours Label
-            self.ClickIntervalMinutes = QSpinBox()  # Create Minutes input
-            self.ClickIntervalMinutesLabel = QLabel(
-                "Minutes")  # Create Minutes Label
-            self.ClickIntervalSeconds = QSpinBox()  # Create Seconds input
-            self.ClickIntervalSecondsLabel = QLabel(
-                "Seconds")  # Create Seconds Label
-            self.ClickIntervalMilliseconds = QSpinBox()  # Create Milliseconds input
-            self.ClickIntervalMillisecondsLabel = QLabel(
-                "Milliseconds")  # Create Milliseconds Label
+        self.clickInterval = delay_interval()
 
-            # Set ClickInterval Information
-            self.ClickInterval.resize(500, 40)
-            self.ClickInterval.setFrameStyle(QFrame.Panel | QFrame.Raised)
-            self.ClickInterval.setLineWidth(1)
-
-            # Add Click Interval to master layout
-            self.MasterLayout.addWidget(self.ClickInterval, 0, 0, 1, 2)
-
-            # Make Click Interval Layout, the layour for Click Interval
-            self.ClickInterval.setLayout(self.ClickIntervalLayout)
-
-            # Add Hours input to Click Interval Layout
-            self.ClickIntervalLayout.addWidget(self.ClickIntervalHours)
-            # Add Hours Label to Click Interval Layout
-            self.ClickIntervalLayout.addWidget(self.ClickIntervalHoursLabel)
-
-            # Add Minutes input to Click Interval Layout
-            self.ClickIntervalLayout.addWidget(self.ClickIntervalMinutes)
-            # Add Minutes Label to Click Interval Layout
-            self.ClickIntervalLayout.addWidget(self.ClickIntervalMinutesLabel)
-
-            # Add Seconds input to Click Interval Layout
-            self.ClickIntervalLayout.addWidget(self.ClickIntervalSeconds)
-            # Add Seconds Label to Click Interval Layout
-            self.ClickIntervalLayout.addWidget(self.ClickIntervalSecondsLabel)
-
-            # Add Milliseconds input to Click Interval Layout
-            self.ClickIntervalLayout.addWidget(self.ClickIntervalMilliseconds)
-            # Add Milliseconds Label to Click Interval Layout
-            self.ClickIntervalLayout.addWidget(
-                self.ClickIntervalMillisecondsLabel)
-        except:
-            self.window_log.error("failed to build delay interval section")
-        else:
-            self.window_log.info("successfully built delay interval section")
+        # Add Click Interval to master layout
+        self.MasterLayout.addWidget(self.clickInterval, 0, 0, 1, 2)
 
     def init_repeat_section(self):
         try:
@@ -487,7 +499,7 @@ class Window(QWidget):
 
     def calculateDelay(self):
         string = "{0:0>2}:{1:0>2}:{2:0>2}:{3:0>2}".format(
-            self.ClickIntervalHours.text(), self.ClickIntervalMinutes.text(), self.ClickIntervalSeconds.text(), self.ClickIntervalMilliseconds.text())
+            self.clickInterval.ClickIntervalHours.text(), self.clickInterval.ClickIntervalMinutes.text(), self.clickInterval.ClickIntervalSeconds.text(), self.clickInterval.ClickIntervalMilliseconds.text())
 
         self.Delay = self.toSeconds(string)
         return self.Delay
