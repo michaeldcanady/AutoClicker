@@ -4,7 +4,7 @@
 block_cipher = None
 
 
-a = Analysis(['AutoClicker\\autoclicker.py'],
+a = Analysis(['autoclicker.py'],
              pathex=[],
              binaries=[],
              datas=[],
