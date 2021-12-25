@@ -2,26 +2,22 @@ name: Package Application with Pyinstaller
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    
-    - name: PyInstaller Windows
-      uses: JackMcKew/pyinstaller-action-windows@v0.1.2
-      with:
-        path: src
-        spec: src/autoclicker.spec
-      
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: AutoClicker
-        path: src/dist/windows
+      - name: PyInstaller Windows
+        uses: JackMcKew/pyinstaller-action-windows@v0.1.2
+        with:
+          path: src
 
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: AutoClicker
+          path: src/dist/windows
