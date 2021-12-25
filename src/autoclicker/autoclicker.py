@@ -45,7 +45,7 @@ import sys
 from logging.handlers import TimedRotatingFileHandler
 
 FORMATTER = logging.Formatter(
-    "%(asctime)s - %(name)-11s - %(levelname)-8s - %(message)s", "%Y-%m-%d %H:%M:%S")
+    "%(asctime)s - %(name)-14s - %(levelname)-8s - %(message)s", "%Y-%m-%d %H:%M:%S")
 LOG_FILE = ".\logs\my_app.log"
 
 
@@ -154,7 +154,7 @@ class Window(QWidget):
         self.right = 300
         self.width = 600
         self.height = 400
-        self.setWindowIcon(QIcon(".\AutoClicker\Images\icon.png"))
+        self.setWindowIcon(QIcon(".\Images\icon.png"))
 
         self.buttondict = {
             "Left": Button.left,

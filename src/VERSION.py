@@ -21,7 +21,7 @@ VSVersionInfo(
         StringStruct(u'LegalCopyright', u'\xa9 Michael Canady. All rights reserved.'),
         StringStruct(u'OriginalFilename', u'autoclicker.py'),
         StringStruct(u'ProductName', u'Clicky Boi'),
-        StringStruct(u'ProductVersion', u'0.1.1.1')])
+        StringStruct(u'ProductVersion', u'0.1.1.2')])
       ]), 
     VarFileInfo([VarStruct(u'Translation', [1033, 1200])])
   ]

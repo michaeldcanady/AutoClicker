@@ -1,5 +1,6 @@
-/AutoClicker/__pycache__/*
+*/__pycache__/*
 /Installer/*
 /pyinstaller.txt
 /.vscode/*
 /logs/*
+/requirements.in
