@@ -14,12 +14,13 @@ jobs:
     steps:
     
     - name: PyInstaller Windows
-      uses: JackMcKew/pyinstaller-action-windows@main
+      uses: JackMcKew/pyinstaller-action-windows@v0.1.2
       with:
         path: src
+        spec: src/autoclicker.spec
       
-
-    - uses: actions/upload-artifact@v2
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v2
       with:
         name: AutoClicker
         path: src/dist/windows
