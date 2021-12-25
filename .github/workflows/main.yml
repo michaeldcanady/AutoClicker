@@ -16,7 +16,6 @@ jobs:
         uses: JackMcKew/pyinstaller-action-windows@v0.1.2
         with:
           path: src
-          spec: src/autoclicker.spec
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
