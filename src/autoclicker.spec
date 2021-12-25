@@ -4,7 +4,7 @@
 block_cipher = None
 
 
-a = Analysis(['src\\autoclicker\\autoclicker.py'],
+a = Analysis(['autoclicker\\autoclicker.py'],
              pathex=[],
              binaries=[],
              datas=[],
@@ -37,4 +37,4 @@ exe = EXE(pyz,
           disable_windowed_traceback=False,
           target_arch=None,
           codesign_identity=None,
-          entitlements_file=None , version='src\versionfile.txt')
+          entitlements_file=None , version='versionfile.txt')
