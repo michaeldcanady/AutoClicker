@@ -17,8 +17,11 @@ jobs:
         with:
           path: src
 
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v2
+      - uses: "marvinpinto/action-automatic-releases@latest"
         with:
-          name: AutoClicker
-          path: src/dist/windows
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: true
+          title: "Development Build"
+          files: |
+            *.exe
