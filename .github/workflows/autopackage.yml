@@ -15,7 +15,7 @@ jobs:
       - name: PyInstaller Windows
         uses: JackMcKew/pyinstaller-action-windows@v0.1.2
         with:
-          path: src/autoclicker
+          path: src
 
       - name: Publish Pre-release
         uses: "marvinpinto/action-automatic-releases@latest"
