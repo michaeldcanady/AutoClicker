@@ -77,8 +77,8 @@ def get_logger(logger_name):
 
 
 class delay_interval(QFrame):
-    def __init__(self, height: int = 500, width: int = 40):
-        super().__init__()
+    def __init__(self, parent, height: int = 500, width: int = 40):
+        super().__init__(parent)
         self.clickInterval_log = get_logger("Click Interval")
 
         self.Height = height
@@ -146,8 +146,8 @@ class delay_interval(QFrame):
 
 
 class cursor_location(QFrame):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent):
+        super().__init__(parent)
         self.cursor_location_log = get_logger("Cursor Location")
 
         self.init_Frame()
@@ -259,8 +259,8 @@ class cursor_location(QFrame):
 
 
 class help_start_stop_config(QFrame):
-    def __init__(self, StartStopKey: str, AutoClickerStarted: bool, height: int = 500, width: int = 40):
-        super().__init__()
+    def __init__(self, parent, StartStopKey: str, AutoClickerStarted: bool, height: int = 500, width: int = 40):
+        super().__init__(parent)
         self.help_start_stop_config_log = get_logger("Help Start Stop Config")
 
         self.StartStopKey = StartStopKey
@@ -341,7 +341,7 @@ class help_start_stop_config(QFrame):
 
             if self.AutoClickerStarted:
                 # Gets delay between each action
-                mainWindow.startAutoClicker()
+                mainWindow.form_widget.startAutoClicker()
             else:
                 self.help_start_stop_config_log.info(
                     "Autoclicker has been stopped")
@@ -386,8 +386,8 @@ class help_start_stop_config(QFrame):
 
 
 class click_options(QFrame):
-    def __init__(self, height: int = 500, width: int = 40):
-        super().__init__()
+    def __init__(self, parent, height: int = 500, width: int = 40):
+        super().__init__(parent)
         self.click_options_log = get_logger("Click Options")
 
         self.buttondict = {
@@ -455,8 +455,8 @@ class click_options(QFrame):
 
 
 class click_repeat(QFrame):
-    def __init__(self, IsFinite: bool, height: int = 500, width: int = 40):
-        super().__init__()
+    def __init__(self, IsFinite: bool, parent, height: int = 500, width: int = 40):
+        super().__init__(parent)
         self.click_repeats_log = get_logger("Click Repeats")
         self.Width = height
         self.Height = width
@@ -524,18 +524,34 @@ class click_repeat(QFrame):
                 "failed to toggle repeat count")
 
 
+class MyMainWindow(QMainWindow):
+
+    def __init__(self, parent=None):
+
+        self.width = 600
+        self.height = 400
+        self.left = 300
+        self.right = 300
+
+        super(MyMainWindow, self).__init__(parent)
+        self.setGeometry(self.left, self.right, self.width, self.height)
+        self.form_widget = Window(
+            self, width=self.width, height=self.height, right=self.right, left=self.left)
+        self.setCentralWidget(self.form_widget)
+
+
 class Window(QWidget):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent, width, height, right, left):
+        super().__init__(parent)
         self.window_log = get_logger("Main Window")
         self.AutoClickerStarted = False
         self.StartStopKey = "F6"
         self.IsFinite = True
         self.title = "Clicky Boi"
-        self.left = 300
-        self.right = 300
-        self.width = 600
-        self.height = 400
+        self.left = left
+        self.right = right
+        self.width = width
+        self.height = height
         self.setWindowIcon(QIcon(".\Images\icon.png"))
 
         self.initUI()
@@ -585,34 +601,33 @@ class Window(QWidget):
             self.window_log.error("failed to initialize user interface")
         else:
             self.window_log.info("successfully initialized user interface")
-            self.show()
 
     def init_delay_interval_section(self):
-        self.clickInterval = delay_interval()
+        self.clickInterval = delay_interval(parent=self)
 
         # Add Click Interval to master layout
         self.MasterLayout.addWidget(self.clickInterval, 0, 0, 1, 2)
 
     def init_repeat_section(self):
-        self.ClickRepeat = click_repeat(IsFinite=self.IsFinite)
+        self.ClickRepeat = click_repeat(IsFinite=self.IsFinite, parent=self)
         # Add Click Repeat to master layout
         self.MasterLayout.addWidget(self.ClickRepeat, 1, 1)
 
     def init_click_options_section(self):
-        self.ClickOptions = click_options()
+        self.ClickOptions = click_options(parent=self)
 
         # Add Click Options to master layout
         self.MasterLayout.addWidget(self.ClickOptions, 1, 0)
 
     def init_help_start_stop_config_section(self):
         self.StartStopAndHelpFrame = help_start_stop_config(
-            StartStopKey=self.StartStopKey, AutoClickerStarted=self.AutoClickerStarted)
+            parent=self, StartStopKey=self.StartStopKey, AutoClickerStarted=self.AutoClickerStarted)
 
         # Add Start/Stop and Help Fram to Master Layout
         self.MasterLayout.addWidget(self.StartStopAndHelpFrame, 3, 0, 1, 2)
 
     def init_Cursor_Location(self):
-        self.CursorLocationFrame = cursor_location()
+        self.CursorLocationFrame = cursor_location(parent=self)
         # Add Cursor Location to master layout
         self.MasterLayout.addWidget(self.CursorLocationFrame, 2, 0, 1, 2)
 
@@ -678,7 +693,7 @@ class ClickMouse(threading.Thread):
                 mouse.click(self.button)
                 if self.count == self.repeatCount:
                     self.click_mouse_log.debug("Stopping clicking")
-                    mainWindow.StartStopAndHelpFrame.StartStopAutoClicker()
+                    mainWindow.form_widget.StartStopAndHelpFrame.StartStopAutoClicker()
                     break
                 else:
                     self.count += 1
@@ -686,12 +701,14 @@ class ClickMouse(threading.Thread):
             time.sleep(0.1)
 
     def countdown(self, count):
-        mainWindow.StartStopAndHelpFrame.countdown(count, self.program_running)
+        mainWindow.form_widget.StartStopAndHelpFrame.countdown(
+            count, self.program_running)
 
 
 if __name__ == "__main__":
     log = get_logger("main")
     mouse = Controller()
     app = QApplication(sys.argv)
-    mainWindow = Window()
+    mainWindow = MyMainWindow()
+    mainWindow.show()
     sys.exit(app.exec_())
