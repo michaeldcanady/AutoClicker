@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: PyInstaller Windows
-        uses: JackMcKew/pyinstaller-action-windows@v0.1.2
+        uses: michaeldcanady/pyinstaller-action-windows@main
         with:
           path: src
           spec: autoclicker.spec
@@ -26,4 +26,4 @@ jobs:
           prerelease: true
           title: "Development Build"
           files: |
-            src/dist/windows/*.exe
+            src/dist/windows/*
