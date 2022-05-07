@@ -1,0 +1,9 @@
+src/autoclicker/__pycache__/*
+/Installer/*
+/pyinstaller.txt
+/.vscode/*
+/logs/*
+/requirements.in
+/src/build/*
+/src/dist/*
+*.sqlite
