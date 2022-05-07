@@ -37,4 +37,4 @@ exe = EXE(pyz,
           disable_windowed_traceback=False,
           target_arch=None,
           codesign_identity=None,
-          entitlements_file=None , version='C:\\Projects\\AutoClicker\\AutoClicker\\version.txt', icon='C:\\Users\\Michael\\OneDrive\\Downloads\\icon.ico')
+          entitlements_file=None , version='src\versionfile.txt', icon='src\Images\icon.ico')
