@@ -6,3 +6,4 @@ src/autoclicker/__pycache__/*
 /requirements.in
 /src/build/*
 /src/dist/*
+*.sqlite
