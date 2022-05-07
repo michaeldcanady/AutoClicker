@@ -16,6 +16,7 @@ jobs:
         uses: JackMcKew/pyinstaller-action-windows@v0.1.2
         with:
           path: src
+          spec: autoclicker.spec
 
       - name: Publish Pre-release
         uses: "marvinpinto/action-automatic-releases@latest"
