@@ -1,8 +1,8 @@
 from lib.autoclicker.logger import get_logger
 
-from PyQt5.QtWidgets import QHBoxLayout, QPushButton, QRadioButton, QLineEdit, QGroupBox
-from PyQt5.QtGui import QIntValidator
-from PyQt5.QtCore import pyqtSignal
+from PyQt6.QtWidgets import QHBoxLayout, QPushButton, QRadioButton, QLineEdit, QGroupBox
+from PyQt6.QtGui import QIntValidator
+from PyQt6.QtCore import pyqtSignal
 
 from pynput.mouse import Button, Listener as mouseListener
 

@@ -1,7 +1,7 @@
 from lib.autoclicker.logger import get_logger
 
-from PyQt5.QtWidgets import QHBoxLayout, QLabel, QGroupBox, QSpinBox
-from PyQt5.QtCore import pyqtSignal
+from PyQt6.QtWidgets import QHBoxLayout, QLabel, QGroupBox, QSpinBox
+from PyQt6.QtCore import pyqtSignal
 
 from datetime import timedelta
 

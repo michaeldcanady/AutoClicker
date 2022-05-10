@@ -6,9 +6,9 @@ import time
 
 from pynput.mouse import Button
 
-from PyQt5.QtWidgets import QPushButton, QGridLayout, QGroupBox
+from PyQt6.QtWidgets import QPushButton, QGridLayout, QGroupBox
 
-from PyQt5.QtCore import pyqtSignal
+from PyQt6.QtCore import pyqtSignal
 
 
 Logger = get_logger(__name__)

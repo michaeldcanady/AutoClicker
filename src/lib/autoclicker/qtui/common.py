@@ -1,9 +1,9 @@
 import enum
 import functools
 
-from PyQt5.QtCore import QSize
-from PyQt5.QtGui import QIcon, QPixmap, QPainter, QColor
-from PyQt5.QtSvg import QSvgRenderer
+from PyQt6.QtCore import QSize
+from PyQt6.QtGui import QIcon, QPixmap, QPainter, QColor
+from PyQt6.QtSvg import QSvgRenderer
 
 ICON_PATH_PREFIX = "src\Images"
 

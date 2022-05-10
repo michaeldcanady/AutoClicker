@@ -2,8 +2,8 @@ from . import common
 
 from autoclicker.qtui import common as ui_common
 
-from PyQt5.QtWidgets import QApplication
-from PyQt5.QtGui import QIcon
+from PyQt6.QtWidgets import QApplication
+from PyQt6.QtGui import QIcon
 import sys
 
 
