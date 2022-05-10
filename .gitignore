@@ -7,3 +7,6 @@ src/autoclicker/__pycache__/*
 /src/build/*
 /src/dist/*
 *.sqlite
+/venv
+
+__pycache__/
