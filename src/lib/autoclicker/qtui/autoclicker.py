@@ -5,8 +5,8 @@ from lib.autoclicker.qtui.ClickMouse import ClickMouse
 
 from lib.autoclicker.qtui.common import load_icon, AutClickerIcon
 
-from PyQt5.QtWidgets import QMainWindow
-from PyQt5.QtCore import QThread
+from PyQt6.QtWidgets import QMainWindow
+from PyQt6.QtCore import QThread
 
 class MyMainWindow(QMainWindow):
 

@@ -1,6 +1,6 @@
 from lib.autoclicker.logger import get_logger
 
-from PyQt5.QtCore import QObject, pyqtSignal
+from PyQt6.QtCore import QObject, pyqtSignal
 
 from pynput.mouse import Controller
 

@@ -6,9 +6,9 @@ from lib.autoclicker.qtui.cursor_location import cursor_location
 from lib.autoclicker.qtui.click_options import click_options
 from lib.autoclicker.qtui.click_repeat import click_repeat
 
-from PyQt5.QtWidgets import QWidget, QGridLayout
-from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import Qt
+from PyQt6.QtWidgets import QWidget, QGridLayout
+from PyQt6.QtGui import QIcon
+from PyQt6.QtCore import Qt
 
 from pynput.mouse import Button
 
@@ -23,8 +23,6 @@ class Window(QWidget):
         self.IsFinite = True
 
         try:
-            self.setAttribute(Qt.WA_DeleteOnClose, True)
-
             layout = QGridLayout()
             self.setLayout(layout)
 
@@ -45,6 +43,7 @@ class Window(QWidget):
             StartStopAndHelpFrame = help_start_stop_config(
                 parent=self, StartStopKey=StartStopKey
             )
+            StartStopAndHelpFrame.stop_autoclicker.connect(self.parent().Clicker.exit)
 
             self.parent().Clicker.finished.connect(StartStopAndHelpFrame.stop)
 
