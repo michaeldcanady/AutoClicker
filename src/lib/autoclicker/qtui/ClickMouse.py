@@ -1,87 +1,100 @@
 from lib.autoclicker.logger import get_logger
+from lib.autoclicker.common import Repeat, Location
 
-from PyQt6.QtCore import QObject, pyqtSignal
+from PyQt6.QtCore import QObject, pyqtSignal, QRunnable
 
-from pynput.mouse import Controller
+from pynput.mouse import Controller, Button
 
-from pynput.mouse import Button
-
+import sys
+import traceback
 import time
 
 Logger = get_logger(__name__)
 
-class ClickMouse(QObject):
 
+class Signals(QObject):
     finished = pyqtSignal()
+    error = pyqtSignal(str)
 
-    def __init__(self):
+
+class ClickMouse(QRunnable):
+
+    def __init__(
+        self,
+        locationState: Location = True,
+        button: Button = Button.left,
+        repeatState: Repeat = Repeat.finite,
+        X: int = 0,
+        Y: int = 0,
+        repeatCount: int = 0,
+        delay: float = 0
+    ) -> None:
+        """Creates QRunnable for handling clicking mouse
+
+        Args:
+            locationState (Location, optional): _description_. Defaults to True.
+            button (Button, optional): _description_. Defaults to Button.left.
+            repeatState (Repeat, optional): _description_. Defaults to Repeat.finite.
+            repeatCount (int, optional): _description_. Defaults to 0.
+            delay (float, optional): _description_. Defaults to 0.
+        """
 
         super(ClickMouse, self).__init__()
-        
-        self.mouse = Controller()
-        self.running = True
-        self.program_running = True
-        self.UseCurrentLocation = True
-        self.button = Button.left
-        self.repeatCount = 0
 
-    def exit(self):
-        self.running = False
-        self.stop_program()
-        self.finished.emit()
+        self.signals = Signals()
+        self._mouse = Controller()
+        self._running: bool = True
+        self._locationState: bool = locationState
+        self._x: int = X
+        self._y: int = Y
+        self._button: Button = button
+        self._repeatState: Repeat = repeatState
+        self._repeatCount: int = repeatCount
+        self._delay: float = delay
 
-    def stop_program(self):
+    def exit(self) -> None:
+        """Exits the autoclicker
+        """
+        self.stop()
+        self.signals.finished.emit()
+
+    def stop(self) -> None:
+        """stops program gracefully
+        """
         Logger.info("Stopping Program")
-        self.program_running = False
-        Logger.debug(f"{'program_running'}: {self.program_running}")
+        self._running = False
+        Logger.debug(f"{'program_running'}: {self._running}")
         Logger.info("Stopped Program")
 
-    def start(self):
-        self.running = True
-        self.program_running = True
+    def start(self) -> None:
+        self._running = True
         self.run()
 
-    def setRepeatCount(self, repeatCount):
-        self.repeatCount = repeatCount
-    
-    def useFiniteRepeat(self, finiteRepeat: bool) -> None:
-        if not finiteRepeat:
-            self.setRepeatCount(-1)
-
-    def setButton(self, button):
-        self.button = button
-
-    def setDelay(self, delay):
-        self.Delay = delay
-
-    def setCordinates(self, X, Y):
-        self.X = X
-        self.Y = Y
-
-    def useCurrentLocation(self, useCurrentLocation: bool):
-        self.UseCurrentLocation = useCurrentLocation
-
-    def run(self):
-        #self.countdown(5)
-        count = 0
-        Logger.debug("Starting clicker")
-        while self.program_running:
-            while self.running:
-                Logger.debug("Clicking")
-                if not self.UseCurrentLocation:
-                    self.mouse.position = (self.X, self.Y)
-                self.mouse.click(self.button)
-                if count == self.repeatCount:
+    def run(self) -> None:
+        try:
+            # self.countdown(5)
+            count = 0
+            Logger.debug("Starting clicker")
+            while self._running:
+                if self._locationState == Location.fixed:
+                    self._mouse.position = (self._x, self._y)
+                self._mouse.click(self._button)
+                if count == self._repeatCount:
                     Logger.debug("Stopping clicking")
                     self.exit()
                     break
                 else:
                     count += 1
-                    time.sleep(self.Delay)
-            time.sleep(0.1)
-        
-        self.finished.emit()
+                    time.sleep(self._delay)
+        except Exception as e:
+            Logger.error(e)
+            traceback.print_exc()
+            exctype, value = sys.exc_info()[:2]
+            #(exctype, value, traceback.format_exc())
+            self.signals.error.emit(e)
+        finally:
+            self.signals.finished.emit()
 
     def countdown(self, count):
         self.parent.StartStopAndHelpFrame.countdown(
-            count, self.program_running)
+            count, self._running)

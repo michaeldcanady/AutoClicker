@@ -1,20 +1,15 @@
 from lib.autoclicker.logger import get_logger
 
-import sys
-
 import time
 
-from pynput.mouse import Button
-
-from PyQt6.QtWidgets import QPushButton, QGridLayout, QGroupBox
-
+from PyQt6.QtWidgets import QPushButton, QGridLayout, QWidget
 from PyQt6.QtCore import pyqtSignal
 
 
 Logger = get_logger(__name__)
 
 
-class help_start_stop_config(QGroupBox):
+class help_start_stop_config(QWidget):
 
     start_autoclicker = pyqtSignal()
     stop_autoclicker = pyqtSignal()

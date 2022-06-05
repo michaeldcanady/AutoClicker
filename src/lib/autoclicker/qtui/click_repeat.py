@@ -1,4 +1,5 @@
 from lib.autoclicker.logger import get_logger
+from lib.autoclicker.common import Repeat
 
 from PyQt6.QtWidgets import QGridLayout, QRadioButton, QGroupBox, QSpinBox
 from PyQt6.QtCore import pyqtSignal
@@ -9,6 +10,7 @@ Logger = get_logger(__name__)
 class click_repeat(QGroupBox):
 
     finiteRepeat = pyqtSignal(bool)
+    repeatChanged = pyqtSignal(Repeat)
     repeatCount = pyqtSignal(int)
 
     def __init__(self, parent):
@@ -29,14 +31,14 @@ class click_repeat(QGroupBox):
             # Create Repeat Radio Button
             RepeatRadioButton = QRadioButton("Repeat")
             RepeatRadioButton.setChecked(True)
-            RepeatRadioButton.clicked.connect(lambda: self.finiteRepeat.emit(True))
+            RepeatRadioButton.clicked.connect(lambda: self.repeatChanged.emit(Repeat.finite))
             RepeatRadioButton.clicked.connect(lambda: self.repeatCount.emit(RepeatSpinBox.value()))
             RepeatRadioButton.clicked.connect(RepeatSpinBox.setEnabled)
 
             # Create Repeat Until Stop Radio Button
             IndefinitelyRadioButton = QRadioButton("Repeat until stopped")
             IndefinitelyRadioButton.clicked.connect(RepeatSpinBox.setDisabled)
-            IndefinitelyRadioButton.clicked.connect(lambda: self.finiteRepeat.emit(False))
+            IndefinitelyRadioButton.clicked.connect(lambda: self.repeatChanged.emit(Repeat.infinite))
 
             # Load widgets into layout
             layout.addWidget(IndefinitelyRadioButton, 1, 0, 1, 1)

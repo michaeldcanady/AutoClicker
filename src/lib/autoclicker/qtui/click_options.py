@@ -1,6 +1,6 @@
 from lib.autoclicker.logger import get_logger
 
-from PyQt6.QtWidgets import QComboBox, QLabel, QGridLayout, QGroupBox
+from PyQt6.QtWidgets import QComboBox, QLabel, QGridLayout, QGroupBox, QFormLayout
 from PyQt6.QtCore import pyqtSignal
 
 from pynput.mouse import Button

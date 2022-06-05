@@ -1,4 +1,5 @@
 from lib.autoclicker.logger import get_logger
+from lib.autoclicker.common import Location
 
 from PyQt6.QtWidgets import QHBoxLayout, QPushButton, QRadioButton, QLineEdit, QGroupBox
 from PyQt6.QtGui import QIntValidator
@@ -11,8 +12,8 @@ Logger = get_logger(__name__)
 
 class cursor_location(QGroupBox):
 
-    useCurrentLocation = pyqtSignal(bool)
     currentLocation = pyqtSignal(int, int)
+    locationChanged = pyqtSignal(Location)
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -29,15 +30,13 @@ class cursor_location(QGroupBox):
             CurrentLocation = QRadioButton("Current Location")
             CurrentLocation.setObjectName("current_location")
             CurrentLocation.clicked.connect(self.ToggleSpecifcLocation)
-            CurrentLocation.clicked.connect(lambda: self.useCurrentLocation.emit(True))
+            CurrentLocation.clicked.connect(lambda: self.locationChanged.emit(Location.current))
             CurrentLocation.setChecked(True)
 
             # Create Specific location radio button
             specific_location = QRadioButton("Specific Location")
             specific_location.clicked.connect(self.ToggleSpecifcLocation)
-            specific_location.clicked.connect(
-                lambda: self.useCurrentLocation.emit(False)
-            )
+            specific_location.clicked.connect(lambda: self.locationChanged.emit(Location.fixed))
 
             # Create Select Specific Location Button
             SelectLocation = QPushButton("Select Location")
